@@ -1,5 +1,4 @@
 from customtkinter import *
-import customtkinter as ctk
 from tkinter import ttk, messagebox, simpledialog
 import sys, re
 sys.path.append('.')
@@ -122,20 +121,10 @@ def page():
             messagebox.showerror("Error", "Product ID already exists")
         else:
             id = idEntry.get()
-            if not id.startswith("P"):
-                if id.isdigit():
-                    id = "P" + idEntry.get()
-                    pendingproduct_database.insert(id, nameEntry.get(), descEntry.get(), quanEntry.get(), email, testEntry.get(), "Pending")
-                    treeview_data()
-                    clear()
-                    messagebox.showinfo("Success", "Product added successfully")
-                else:
-                    messagebox.showerror("Error", "Product ID must start with 'P' followed by digits")
-            else:
-                pendingproduct_database.insert(id, nameEntry.get(), descEntry.get(), quanEntry.get(), email, testEntry.get(), "Pending")
-                treeview_data()
-                clear()
-                messagebox.showinfo("Success", "Product added successfully")
+            pendingproduct_database.insert(id, nameEntry.get(), descEntry.get(), quanEntry.get(), email, testEntry.get(), "Pending")
+            treeview_data()
+            clear()
+            messagebox.showinfo("Success", "Product added successfully")
                 
     def delete():
         selected_item = tree.selection()
