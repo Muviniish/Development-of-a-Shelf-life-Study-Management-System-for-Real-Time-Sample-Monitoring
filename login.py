@@ -1,6 +1,11 @@
 from customtkinter import *
 import customtkinter as ctk
 from PIL import Image
+from admin import admindashboard
+from user import userdashboard
+from tester import testerdashboard
+import database
+import messagebox
 
 class GIFLabel(ctk.CTkLabel):
     def __init__(self, master, image_path, **kwargs):
@@ -31,23 +36,41 @@ class LoginForm:
         self.window.geometry('1166x718')
         self.window.state('zoomed')
         self.window.resizable(0, 0)
+        
 
 
 def page():
+    def login():
+        if database.connection1(usernameEntry.get(), passwordEntry.get()):
+            messagebox.showinfo("Welcome Admin", "Login Successful")
+            window.destroy()
+            admindashboard.page()
+        elif database.connection2(usernameEntry.get(), passwordEntry.get()):
+            messagebox.showinfo("Welcome User", "Login Successful")
+            window.destroy()
+            userdashboard.page()
+        elif database.connection3(usernameEntry.get(), passwordEntry.get()):
+            messagebox.showinfo("Welcome Tester", "Login Successful")
+            window.destroy()
+            testerdashboard.page()
+
+        else:
+            messagebox.showinfo("Error", "Login Unsuccessful")
+
     window = CTk()
     LoginForm(window)
-    backgroundImg = CTkImage(Image.open('background.jpg'), size=(1166,718))
+    backgroundImg = CTkImage(Image.open('images/background.jpg'), size=(1166,718))
     bacxkgroundImgLabel = CTkLabel(window, image=backgroundImg, text="")
     bacxkgroundImgLabel.place(x=0, y=0)
     Frame = CTkFrame(window, fg_color='#ffeae0', width=950, height=600)
     Frame.place(x=100, y=50)
     Frame2 = CTkFrame(Frame, fg_color='#FCD8CD', width=400, height=510, corner_radius=30)
     Frame2.place(x=520, y=50)
-    gif = GIFLabel(Frame, "loginPage.gif")
+    gif = GIFLabel(Frame, "images/loginPage.gif")
     gif.place(x=5, y=55)
     header = CTkLabel(Frame, text="AMBU Shelf-Life Study Management System", width=300, height=30, font=('yu gothic ui', 25, 'bold'), fg_color="#ffeae0", text_color='black')
     header.place(x=470, y=20, anchor=CENTER)
-    img = CTkImage(Image.open('signIn.jpeg'), size=(120,100))
+    img = CTkImage(Image.open('images/signIn.jpeg'), size=(120,100))
     imgLabel = CTkLabel(Frame, image=img, text="")
     imgLabel.place(x=660, y=110)
     signLabel= CTkLabel(Frame, text="Sign In", fg_color="#FCD8CD", bg_color='#FCD8CD', font=('yu gothic ui', 19, 'bold'))
@@ -58,7 +81,7 @@ def page():
     usernameEntry.place(x=580, y=300)
     usernameLine = CTkCanvas(Frame, width=300, height=2.0, bg="#bdb9b1", highlightthickness=0)
     usernameLine.place(x=550, y=330)
-    usernameIcon = CTkImage(Image.open('usernameIcon.jpg'), size=(30,20))
+    usernameIcon = CTkImage(Image.open('images/usernameIcon.jpg'), size=(30,20))
     usernameIconLabel = CTkLabel(Frame, image=usernameIcon, text="")
     usernameIconLabel.place(x=550, y=300)
 
@@ -68,11 +91,11 @@ def page():
     passwordEntry.place(x=580, y=380)
     passwordLine = CTkCanvas(Frame, width=300, height=2.0, bg="#bdb9b1", highlightthickness=0)
     passwordLine.place(x=550, y=410)
-    passwordIcon = CTkImage(Image.open('passwordIcon.jpg'), size=(30,20))
+    passwordIcon = CTkImage(Image.open('images/passwordIcon.jpg'), size=(30,20))
     passwordIconLabel = CTkLabel(Frame, image=passwordIcon, text="")
     passwordIconLabel.place(x=550, y=380)
-    showImg = CTkImage(Image.open('show.jpg'), size=(30,20))
-    hideImg = CTkImage(Image.open('hide.jpg'), size=(30,20))
+    showImg = CTkImage(Image.open('images/show.jpg'), size=(30,20))
+    hideImg = CTkImage(Image.open('images/hide.jpg'), size=(30,20))
     def show():
         if passwordEntry.cget('show')=='*':
             passwordEntry.configure(show='')
@@ -90,7 +113,7 @@ def page():
     
 
     loginBtn = CTkButton(Frame, text="LOGIN",  font=('yu gothic ui', 20, 'bold'), width=337,
-                         bg_color='blue', cursor='hand2', fg_color='blue')
+                         bg_color='blue', cursor='hand2', fg_color='blue', command=login)
     loginBtn.place(x=550, y=430)
 
     window.mainloop()
