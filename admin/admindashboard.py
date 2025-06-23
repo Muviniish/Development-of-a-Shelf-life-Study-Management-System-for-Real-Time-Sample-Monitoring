@@ -1,15 +1,10 @@
 from customtkinter import *
-import customtkinter as ctk
-from tkinter import ttk, messagebox, PhotoImage
-from tkinter import Toplevel as ct
-from PIL import Image, ImageTk
-import re, io
-import barcode as br
-from barcode.writer import ImageWriter
+from tkinter import ttk, messagebox
+import re
 from datetime import datetime
 import sys
 sys.path.append('.')
-import login
+import login, barcodegenerator
 from admin import product_database, pendingproduct_database
 from user import user_database
 regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
@@ -19,7 +14,6 @@ class LoginForm:
         self.window.geometry('1166x718')
         self.window.state('zoomed')
         self.window.resizable(0, 0)
-
 
 def page():
     global my_y
@@ -94,7 +88,7 @@ def page():
             tree.delete(*tree.get_children())
             for product in searched_products:
                 tree.insert('', END, values=product)
-        
+
     def generate_barcode():
         selected_item = tree.selection()
         if not selected_item:
@@ -102,17 +96,7 @@ def page():
         else:
             item = tree.item(selected_item)
             id=item['values'][0]
-            img_writer = ImageWriter()
-            fp = io.BytesIO()
-            br.Code128(code=id, writer=img_writer).write(fp)
-            img = Image.open(fp)
-            photo = ImageTk.PhotoImage(img)
-            popup = ct(window)
-            popup.title("Image Popup")
-
-            image_label = ttk.Label(popup, image=photo)
-            image_label.image = photo
-            image_label.pack()
+            barcodegenerator.generator(id, window)
 
     Frame1 = CTkFrame(window, fg_color='#ffeae0', bg_color='#ffeae0', width=1166, height=638)
     Frame1.place(x=0, y=80)
@@ -180,18 +164,10 @@ def page():
                 pendingproduct_database.updateapprove(id)
                 treeview1_data()
                 treeview2_data()
-                messagebox.showinfo("Success", "Product approved successfully")
-                img_writer = ImageWriter()
-                fp = io.BytesIO()
-                br.Code128(code=id, writer=img_writer).write(fp)
-                img = Image.open(fp)
-                photo = ImageTk.PhotoImage(img)
-                popup = ct(window)
-                popup.title("Image Popup")
-
-                image_label = ttk.Label(popup, image=photo)
-                image_label.image = photo
-                image_label.pack()
+                messagebox.showinfo("Success", "Product approved")
+                barcodegenerator.generator(id, window)
+                
+                
                 
 
     def deleteProduct():
@@ -203,7 +179,7 @@ def page():
             id=item['values'][0]
             pendingproduct_database.updatereject(id)
             treeview2_data()
-            messagebox.showinfo("Success", "User deleted successfully")
+            messagebox.showinfo("Success", "Product rejected")
    
     bottomframe = CTkFrame(Frame1, fg_color='#ffeae0', bg_color='#ffeae0', width=1166, height=280)
     bottomframe.place(x=0, y=330)
@@ -250,20 +226,10 @@ def page():
             messagebox.showerror("Error", "Invalid email format")
         else:
             id = idEntry.get()
-            if not id.startswith("USER"):
-                if id.isdigit():
-                    id = "USER" + idEntry.get()
-                    user_database.insert(id, nameEntry.get(), passEntry.get(), emailEntry.get(), roleBox.get(), genderBox.get())
-                    treeview3_data()
-                    clear()
-                    messagebox.showinfo("Success", "User added successfully")
-                else:
-                    messagebox.showerror("Error", "User ID must start with 'USER' followed by digits")
-            else:
-                user_database.insert(id, nameEntry.get(), passEntry.get(), emailEntry.get(), roleBox.get(), genderBox.get())
-                treeview3_data()
-                clear()
-                messagebox.showinfo("Success", "User added successfully")
+            user_database.insert(id, nameEntry.get(), passEntry.get(), emailEntry.get(), roleBox.get(), genderBox.get())
+            treeview3_data()
+            clear()
+            messagebox.showinfo("Success", "User added successfully")
 
     def validate_email(email):
         if re.fullmatch(regex, email):

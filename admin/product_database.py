@@ -35,19 +35,6 @@ def search(option, value):
     result = mycursor.fetchall()
     return result
 
-def update(id, name, desc, quan, email, testdate, approved):
-    load()
-    mycursor.execute("UPDATE products SET name = %s, description = %s, quantity = %s, test_date = %s WHERE ID = %s AND email = %s", (name, desc, quan, testdate, id, email))
-    conn.commit()
-    mycursor.execute("SELECT * FROM products where approved_date = %s", (approved))
-    columns = [desc[0] for desc in mycursor.description]
-    rows = mycursor.fetchall()
-    ws.append(columns)
-    for row in rows:
-        ws.append(row)
-    
-    wb.save(file_name)
-
 def id_exists(user_id):
     mycursor.execute("SELECT COUNT(*) FROM products WHERE ID = %s", (user_id,))
     result=mycursor.fetchone()
